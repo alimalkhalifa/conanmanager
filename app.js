@@ -2,7 +2,8 @@ var Steam = require('steam-web');
 const fs = require('fs');
 var dateFormat = require('dateformat');
 var timer = require('timers');
-const spawn = require('child_process').spawn; 
+const spawn = require('child_process').spawn;
+const exec = require('child_process').execSync;
 var wincmd = require('node-windows');
 
 var def_steamkey = 'F8D756B20828053B061B1F5467961F63';
@@ -14,6 +15,9 @@ var s = new Steam({
 	format: 'json'
 });
 
+console.log("Conan DS Manager");
+console.log("By Ali");
+
 timer.setInterval( function() {
 	var PID = -1;
 	wincmd.list(function(svc) {
@@ -22,13 +26,21 @@ timer.setInterval( function() {
 				PID = svc[c].PID ;
 		}
 		if ( PID < 0 ) {
-			console.log(dateFormat(Date.now(), "dddd, mmmm dS, yyyy, h:MM:ss TT" ))
-			console.log("Starting Server");
-			spawn('D:\\SteamCMD\\steamapps\\common\\Conan Exiles Dedicated Server\\ConanSandboxServer.exe', ['-log'], { cwd: 'D:\\SteamCMD\\steamapps\\common\\Conan Exiles Dedicated Server' });
+			wincmd.list(function(svd) {
+				for ( d in svc ) {
+					if ( svd[d].ImageName == "steamcmd.exe")
+						PID = svd[d].PID ;
+				}
+				if ( PID < 0 ) {
+					console.log(dateFormat(Date.now(), "dddd, mmmm dS, yyyy, h:MM:ss TT" ))
+					console.log("Starting Server");
+					spawn('C:\\conanexiles\\ConanSandboxServer.exe', ['-log', 'MaxPlayers=50', 'Port=7777', 'QueryPort=5000', 'ServerName=[ME/AR] GG.NETWORK Arab Server 2x [AUTOUPDATE, Active Admins]'], { cwd: 'C:\\conanexiles' });
+				}
+			});
 		}
 	}, false);
 	
-}, 1 * 1000);
+}, 10 * 1000);
 
 timer.setInterval( function() {
 	var announcements = [];
@@ -78,9 +90,12 @@ timer.setInterval( function() {
 						console.log("Server found running at PID " + PID);
 						spawn('taskkill', ['/IM','ConanSandboxServer-Win64-Test.exe']);
 					}
-				}, false);
+					console.log("Updating Server");
+					var res = exec('C:\\SteamCMD\\steamcmd.exe +login anonymous +force_install_dir C:\\ConanExiles +app_update 443030 +quit');
+					console.log(res);
+				}, false);	
 			}
 			
 		}
 	});
-},5 * 1000);
+},60 * 1000);

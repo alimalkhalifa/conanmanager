@@ -9,6 +9,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "blessed": "git+https://github.com/chjj/blessed.git",
+    "blessed-contrib": "^4.7.5",
     "dateformat": "^2.0.0",
     "node-windows": "^0.1.14",
     "steam-api": "^1.1.3",
