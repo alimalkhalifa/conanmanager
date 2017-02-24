@@ -14,25 +14,22 @@ var box = blessed.box ({
     type: 'line'
   },
   style: {
-    fg: config.color.fg_primary,
-    bg: config.color.bg_primary,
+    fg: config.color.primary,
+    bg: config.color.secondary,
     border: {
-      fg: config.color.fg_primary
+      fg: config.color.primary
     }
   }
 });
 
 box.on('status', function(status) {
-  if ( status != store.status ) {
-    store.status = status ;
-    if ( status ) {
-      box.setContent('Server is Running');
-    } else {
-      box.setContent('Server is {'+ config.color.fg_error + '-fg}{bold}NOT{/} Running');
-    }
-    store.UI.screen.render();
+  if ( status ) {
+    box.setContent('Server is Running');
+  } else {
+    box.setContent('Server is {'+ config.color.error + '-fg}{bold}NOT{/} Running');
   }
-})
+  store.UI.screen.render();
+});
 
 store.UI.serverStatus = box ;
 module.exports = box;
