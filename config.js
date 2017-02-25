@@ -16,14 +16,10 @@ var config = {
     },
     queryPort: {
       value: '5000'
-    },
-    autoRestart: {
-      value: 'Off'
-    },
-    autoUpdate: {
-      value: 'Off'
     }
   },
+  autoUpdate: false,
+  autoRestart: false
 }
 
 module.exports = config ;

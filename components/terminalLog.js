@@ -8,7 +8,7 @@ var log = blessedc.log ({
   width: '80%',
   height: '45%',
   tags: true,
-  label: ' {bold}F3: Server log{/} ',
+  label: ' {bold}Server log{/} ',
   border: {
     type: 'line'
   },

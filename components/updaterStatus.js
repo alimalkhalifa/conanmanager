@@ -9,7 +9,6 @@ var box = blessed.box ({
   height: '10%',
   tags: true,
   label: ' {bold}Updater Status{/} ',
-  content: 'Not functional yet',
   border: {
     type: 'line'
   },
@@ -21,6 +20,27 @@ var box = blessed.box ({
     }
   }
 });
+
+box.on('update', function() {
+  var text = 'Autoupdate is {' + config.color.alert + '-fg}{bold}' ;
+  if ( store.autoUpdate ) {
+    text += 'ON';
+  } else {
+    text += 'OFF';
+  }
+  text += '{/}\nAutorestart is {' + config.color.alert + '-fg}{bold}' ;
+  if ( store.autoRestart ) {
+    text += 'ON';
+  } else {
+    text += 'OFF';
+  }
+  text += '{/}';
+  box.setContent(text);
+
+  store.UI.screen.render();
+});
+
+box.emit('update');
 
 store.UI.updaterStatus = box ;
 module.exports = box;

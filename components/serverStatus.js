@@ -9,7 +9,6 @@ var box = blessed.box ({
   height: '10%',
   tags: true,
   label: ' {bold}Server Status{/} ',
-  content: 'Waiting for Server Status...',
   border: {
     type: 'line'
   },
@@ -22,14 +21,16 @@ var box = blessed.box ({
   }
 });
 
-box.on('status', function(status) {
-  if ( status ) {
-    box.setContent('Server is Running');
+box.on('update', function() {
+  if ( store.pid >= 0 ) {
+    box.setContent('Server is Running at PID ' + store.pid);
   } else {
     box.setContent('Server is {'+ config.color.error + '-fg}{bold}NOT{/} Running');
   }
   store.UI.screen.render();
 });
+
+box.emit('update');
 
 store.UI.serverStatus = box ;
 module.exports = box;

@@ -8,7 +8,6 @@ var text = blessed.text ({
   width: '100%',
   height: '5%',
   tags: true,
-  content: '<F1>Settings    <Ctrl-C>Exit',
   style: {
     fg: config.color.secondary,
     bg: config.color.primary,
