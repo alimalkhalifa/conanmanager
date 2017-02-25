@@ -6,7 +6,8 @@ var config = require('./config.js');
 var store = {
   UI: {
     
-  }
+  },
+  events: []
 };
 
 timer.setInterval(function() { // Server Status check

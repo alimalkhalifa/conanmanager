@@ -10,7 +10,7 @@ var table = blessed.listtable ({
   top: '10%',
   left: '0',
   width: '40%',
-  height: '25%',
+  height: '40%',
   tags: true,
   data: null,
   align: 'center',
