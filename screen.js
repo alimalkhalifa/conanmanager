@@ -18,7 +18,8 @@ require('./components/helpLine.js');
 require('./components/serverSettings/prompt.js');
 require('./components/eventLog.js');
 require('./components/terminalLog.js');
-require('./components/memGraph.js')
+require('./components/memGraph.js');
+require('./components/aboutPage.js');
 
 screen.title = 'Conan DS Manager';
 
@@ -26,18 +27,22 @@ screen.key(['C-c', 'q'], function( ch, key ) {
   return process.exit(0);
 });
 
-screen.key('f1', function( ch, key ) {
+screen.key('f5', function( ch, key ) {
   if ( root ) {
     store.UI.serverSettings.focus();
     root = false ;
   }
 });
 
-screen.key('f2', function( ch, key ) {
+screen.key('f6', function( ch, key ) {
   if ( root ) {
     store.UI.eventLog.focus();
     root = false ;
   }
+});
+
+screen.key('f1', function( ch, key ) {
+  store.UI.aboutPage.emit('display');
 });
 
 screen.key('escape', function( ch, key ) {
@@ -96,7 +101,7 @@ screen.key('C-k', function( ch, key ) {
 });
 
 screen.on('helpline', function() {
-  store.UI.helpLine.emit('content', '<F-keys> Focus Element      <U> Enable auto updater       <R> Update auto restarter       <Ctrl-R> Start server      <Ctrl-U> Immediate Update      <X> Cancel pending update        <Crtl-K> Kill Server      <Ctrl-C> Exit');
+  store.UI.helpLine.emit('content', '<F1> About      <F5/F6> Focus Element      <U> Enable auto updater       <R> Update auto restarter       <Ctrl-R> Start server      <Ctrl-U> Immediate Update      <X> Cancel pending update        <Crtl-K> Kill Server      <Ctrl-C> Exit');
 });
 
 screen.append(store.UI.serverStatus);
@@ -105,9 +110,11 @@ screen.append(store.UI.serverSettings);
 screen.append(store.UI.helpLine);
 screen.append(store.UI.eventLog);
 screen.append(store.UI.terminalLog);
+screen.append(store.UI.aboutPage);
 // screen.append(store.UI.memGraph); // Appended in module
 
 screen.append(store.UI.prompt);
+//screen.append(store.UI.aboutPage);
 
 screen.emit('helpline');
 screen.render() ;

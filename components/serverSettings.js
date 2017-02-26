@@ -40,7 +40,7 @@ var table = blessed.listtable ({
 table.setData(data1);
 
 table.on('label', function() {
-  table.setLabel(" {bold}F1: Server Settings{/} ");
+  table.setLabel(" {bold}F5: Server Settings{/} ");
   table.emit('update');
 });
 

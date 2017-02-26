@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node index.js"
   },
-  "author": "Ali Al-Khalifa",
+  "author": "Ali Al-Khalifa <alimalkhalifa>",
   "license": "GPL",
   "dependencies": {
     "blessed": "^0.1.81",

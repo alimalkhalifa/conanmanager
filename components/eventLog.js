@@ -68,7 +68,7 @@ table.on('update', function() {
 });
 
 table.on('label', function() {
-  table.setLabel(' {bold}F2: Events log{/} ');
+  table.setLabel(' {bold}F6: Events log{/} ');
 });
 
 table.key('down', function( ch, key ) {
