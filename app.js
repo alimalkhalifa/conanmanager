@@ -57,8 +57,8 @@ timer.setInterval( function() {
 					news.splice(n,1);
 			}
 			
-			if ( fs.existsSync('announcements.txt') ) {
-				announcements = JSON.parse(fs.readFileSync('announcements.txt'));
+			if ( fs.existsSync('announcements.json') ) {
+				announcements = JSON.parse(fs.readFileSync('announcements.json'));
 			}
 				
 			for ( var n = news.length-1; n >= 0 ; n-- ) {
@@ -75,7 +75,7 @@ timer.setInterval( function() {
 				}
 			}
 			if ( newnews ) {
-				fs.writeFile('announcements.txt', JSON.stringify(announcements), { flag: 'w' }, function(err) {
+				fs.writeFile('announcements.json', JSON.stringify(announcements), { flag: 'w' }, function(err) {
 					if ( err ) return console.log(err);
 				});
 				

@@ -1,5 +1,6 @@
 var blessed = require('blessed');
 var store = require('./store.js');
+var config = require('./config.js');
 
 var root = true ;
 
@@ -17,6 +18,7 @@ require('./components/helpLine.js');
 require('./components/serverSettings/prompt.js');
 require('./components/eventLog.js');
 require('./components/terminalLog.js');
+require('./components/memGraph.js')
 
 screen.title = 'Conan DS Manager';
 
@@ -47,26 +49,65 @@ screen.key('escape', function( ch, key ) {
 });
 
 screen.key(['u', 'U'], function( ch, key ) {
-  store.autoUpdate = !store.autoUpdate;
+  config.autoUpdate = !config.autoUpdate;
   store.UI.updaterStatus.emit('update');
+  config.save() 
 });
 
 screen.key(['r', 'R'], function( ch, key ) {
-  store.autoRestart = !store.autoRestart;
+  config.autoRestart = !config.autoRestart;
   store.UI.updaterStatus.emit('update');
-})
+  config.save() ;
+});
+
+screen.key(['C-u'], function( ch, key ) {
+  config.needUpdate = true ;
+  config.save() ;
+  store.UI.updaterStatus.emit('update');
+  store.shouldUpdate();
+});
+
+screen.key(['C-r'], function( ch, key ) {
+  if ( !store.starting ) {
+    if ( !store.updating ) {
+      if ( !store.killing ) {
+        if ( store.pid < 0 ) {
+          store.startServer()
+        }
+      }
+    }
+  }
+});
+
+screen.key(['x', 'X'], function( ch, key ) {
+  if ( config.needUpdate ) {
+    config.needUpdate = false ;
+    config.save() ;
+    store.UI.updaterStatus.emit('update');
+  }
+});
+
+screen.key('C-k', function( ch, key ) {
+  if ( !store.starting ) {
+    if ( !store.killing ) {
+      store.killServer() ;
+    }
+  }
+});
 
 screen.on('helpline', function() {
-  store.UI.helpLine.emit('content', '<F1> Settings        <F2> Event Log        <U> Enable auto updater        <R> Update auto restarter        <Ctrl-C> Exit');
-})
+  store.UI.helpLine.emit('content', '<F-keys> Focus Element      <U> Enable auto updater       <R> Update auto restarter       <Ctrl-R> Start server      <Ctrl-U> Immediate Update      <X> Cancel pending update        <Crtl-K> Kill Server      <Ctrl-C> Exit');
+});
 
 screen.append(store.UI.serverStatus);
 screen.append(store.UI.updaterStatus);
 screen.append(store.UI.serverSettings);
 screen.append(store.UI.helpLine);
-screen.append(store.UI.prompt);
 screen.append(store.UI.eventLog);
 screen.append(store.UI.terminalLog);
+// screen.append(store.UI.memGraph); // Appended in module
+
+screen.append(store.UI.prompt);
 
 screen.emit('helpline');
 screen.render() ;

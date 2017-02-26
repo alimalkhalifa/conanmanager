@@ -64,11 +64,41 @@ table.key('up', function( ch, key ) {
 });
 
 table.key('enter', function( ch, key ) {
-  store.UI.prompt.emit('prompt', data1[table.selected][0], '???', data1[table.selected][1]);
+  var setting = data1[table.selected][0] ;
+
+  if ( config.game[setting].no_space ) {
+    if ( config.game[setting].value == '' )
+      store.UI.prompt.emit('prompt', setting, config.game[setting].prompt_text, config.game[setting].initial_value, true );
+    else
+      store.UI.prompt.emit('prompt', setting, config.game[setting].prompt_text, config.game[setting].value, true );
+  } else {
+    if ( config.game[setting].value == '' )
+      store.UI.prompt.emit('prompt', setting, config.game[setting].prompt_text, config.game[setting].initial_value );
+    else
+      store.UI.prompt.emit('prompt', setting, config.game[setting].prompt_text, config.game[setting].value );
+  }
+});
+
+table.key(['d', 'D'], function( ch, key ) {
+  var setting = data1[table.selected][0] ;
+
+  config.game[setting].value = config.game[setting].initial_value;
+
+  table.emit('update');
+});
+
+table.key(['s', 'S'], function( ch, key ) {
+  config.save() ;
+  store.UI.updaterStatus.emit('update');
+});
+
+table.key(['l', 'L'], function( ch, key ) {
+  config.load() ;
+  table.emit('update');
 });
 
 table.on('focus', function() {
-  store.UI.helpLine.emit('content', '<Escape> Unfocus          <Enter> Edit Setting          <Ctrl-C> Exit');
+  store.UI.helpLine.emit('content', '<Escape> Unfocus       <Enter> Edit Setting         <D> Default Value        <S> Save Config       <L> Load Config       <Ctrl-C> Exit');
   table.style.border.fg = config.color.alert;
   store.UI.screen.render();
 });

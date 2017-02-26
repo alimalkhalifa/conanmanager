@@ -1,2 +1,4 @@
 node_modules/
-announcements.txt
+announcements.json
+config.json
+events.json

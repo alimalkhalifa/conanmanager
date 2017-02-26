@@ -22,6 +22,10 @@ var log = blessedc.log ({
 });
 
 log.on('log', function(text) {
+  var textArray = text.split('\n');
+  for ( var t in textArray ) {
+    log.log(textArray[t]);
+  }
 });
 
 store.UI.terminalLog = log ;

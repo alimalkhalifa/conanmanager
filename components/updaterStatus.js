@@ -23,18 +23,21 @@ var box = blessed.box ({
 
 box.on('update', function() {
   var text = 'Autoupdate is {' + config.color.alert + '-fg}{bold}' ;
-  if ( store.autoUpdate ) {
+  if ( config.autoUpdate ) {
     text += 'ON';
   } else {
     text += 'OFF';
   }
   text += '{/}\nAutorestart is {' + config.color.alert + '-fg}{bold}' ;
-  if ( store.autoRestart ) {
+  if ( config.autoRestart ) {
     text += 'ON';
   } else {
     text += 'OFF';
   }
   text += '{/}';
+  if ( config.needUpdate ) {
+    text += '\n{' + config.color.alert + '-fg}{bold}PENDING UPDATE{/}'
+  }
   box.setContent(text);
 
   store.UI.screen.render();

@@ -24,11 +24,17 @@ var prompt = blessed.prompt ({
   }
 });
 
-prompt.on('prompt', function(setting, prompt_text, initial_value) {
+prompt.on('prompt', function(setting, prompt_text, initial_value, no_space) {
   prompt.readInput(prompt_text, initial_value, function(err, result) {
-    if ( result )
+    if ( result ) {
+      if ( no_space ) {
+        result = result.replace(' ', '_');
+      }
       config.game[setting].value = result;
+    }
+    config.save() ;
     store.UI.serverSettings.emit('update');
+    store.UI.updaterStatus.emit('update');
     store.UI.screen.render();
   });
 });

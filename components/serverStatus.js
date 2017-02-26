@@ -22,8 +22,14 @@ var box = blessed.box ({
 });
 
 box.on('update', function() {
-  if ( store.pid >= 0 ) {
+  if ( store.killing ) {
+    box.setContent('Killing Server');
+  } else if ( store.pid >= 0 ) {
     box.setContent('Server is Running at PID ' + store.pid);
+  } else if ( store.updating ) {
+    box.setContent('Server is updating');
+  } else if ( store.starting ) {
+    box.setContent('Server is starting...');
   } else {
     box.setContent('Server is {'+ config.color.error + '-fg}{bold}NOT{/} Running');
   }
