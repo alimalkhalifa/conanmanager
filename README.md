@@ -34,6 +34,9 @@ process.
 The server manager does not support having a space in the Conan Exiles
 Server directory.  This is a limitation of SteamCMD.
 
+Autoupdate currently tracks Steam Community News for Conan Exiles.  I am currently
+evaluating using SteamCMD +app_info_update 1 +app_info_print for future updates.
+
 ## Instructions
 
 Download SteamCMD from https://steamcdn-a.akamaihd.net/client/installer/steamcmd.zip
