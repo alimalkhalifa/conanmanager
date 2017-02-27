@@ -1,5 +1,7 @@
 # Conan Server Manager
 
+![Conan Server Screenshot](https://alimalkhalifa.github.io/conanmanager/screenshot.png)
+
 ## Features
 
 - Server status monitor
@@ -18,7 +20,8 @@ at the moment.  This will be updated to support Linux when the
 Linux Dedicated Server is released.
 
 The server is built on Node.  Installation and execution is controlled
-by NPM.
+by NPM.  I use blessed for my UI and steam-web and node-windows for most
+of the heavy lifting.
 
 You will need Node (preferibly the LTS version), SteamCMD, and git (such
 as Git for Windows or Git-SCM)
@@ -31,6 +34,9 @@ process.
 
 The server manager does not support having a space in the Conan Exiles
 Server directory.  This is a limitation of SteamCMD.
+
+Autoupdate currently tracks Steam Community News for Conan Exiles.  I am currently
+evaluating using SteamCMD +app_info_update 1 +app_info_print for future updates.
 
 ## Instructions
 
