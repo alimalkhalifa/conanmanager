@@ -42,7 +42,8 @@ You can then run the following commands:
 ```
 git clone https://github.com/alimalkhalifa/conanmanager.git
 cd conanmanager
-node index.js
+npm install
+npm start
 ```
 
 This will bring you to the main screen.  Follow the directions in the help
