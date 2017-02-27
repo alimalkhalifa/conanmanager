@@ -1,4 +1,3 @@
 node_modules/
-announcements.json
-config.json
-events.json
+*.json
+*.log
