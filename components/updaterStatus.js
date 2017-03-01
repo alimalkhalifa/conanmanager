@@ -13,22 +13,22 @@ var box = blessed.box ({
     type: 'line'
   },
   style: {
-    fg: config.color.primary,
-    bg: config.color.secondary,
+    fg: config.color.primaryColor,
+    bg: config.color.secondaryColor,
     border: {
-      fg: config.color.primary
+      fg: config.color.primaryColor
     }
   }
 });
 
 box.on('update', function() {
-  var text = 'Autoupdate is {' + config.color.alert + '-fg}{bold}' ;
+  var text = 'Autoupdate is {' + config.color.alertColor + '-fg}{bold}' ;
   if ( config.autoUpdate ) {
     text += 'ON';
   } else {
     text += 'OFF';
   }
-  text += '{/}\nAutorestart is {' + config.color.alert + '-fg}{bold}' ;
+  text += '{/}\nAutorestart is {' + config.color.alertColor + '-fg}{bold}' ;
   if ( config.autoRestart ) {
     text += 'ON';
   } else {
@@ -36,7 +36,7 @@ box.on('update', function() {
   }
   text += '{/}';
   if ( config.needUpdate ) {
-    text += '\n{' + config.color.alert + '-fg}{bold}PENDING UPDATE{/}'
+    text += '\n{' + config.color.alertColor + '-fg}{bold}PENDING UPDATE{/}'
   }
   box.setContent(text);
 

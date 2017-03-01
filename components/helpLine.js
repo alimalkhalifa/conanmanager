@@ -9,8 +9,8 @@ var text = blessed.text ({
   height: '5%',
   tags: true,
   style: {
-    fg: config.color.secondary,
-    bg: config.color.primary,
+    fg: config.color.secondaryColor,
+    bg: config.color.primaryColor,
   }
 });
 

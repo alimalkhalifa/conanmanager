@@ -13,10 +13,10 @@ var log = blessedc.log ({
     type: 'line'
   },
   style: {
-    fg: config.color.primary,
-    bg: config.color.secondary,
+    fg: config.color.primaryColor,
+    bg: config.color.secondaryColor,
     border: {
-      fg: config.color.primary
+      fg: config.color.primaryColor
     }
   }
 });

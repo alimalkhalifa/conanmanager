@@ -17,20 +17,20 @@ var table = blessed.listtable ({
     type: 'line'
   },
   style: {
-    fg: config.color.primary,
-    bg: config.color.secondary,
+    fg: config.color.primaryColor,
+    bg: config.color.secondaryColor,
     border: {
-      fg: config.color.primary
+      fg: config.color.primaryColor
     },
     header: {
-      fg: config.color.primary,
+      fg: config.color.primaryColor,
       bold: true
     },
     cell: {
-      fg: config.color.primary,
+      fg: config.color.primaryColor,
       selected: {
-        bg: config.color.primary,
-        fg: config.color.secondary
+        bg: config.color.primaryColor,
+        fg: config.color.secondaryColor
       }
     }
   }
@@ -45,7 +45,7 @@ table.on('newEvent', function(e_name, e_desc) {
   fs.writeFile('events.json', JSON.stringify(store.events), { flag: 'w' }, function(err) {
     if ( err ) {
       store.UI.terminalLog.emit('log', '[ERROR] ' + err);
-      store.UI.eventLog.emit('newEvent', config.event.ERROR, 'Error writing events to file');
+      store.UI.eventLog.emit('newEvent', config.event.errorColor, 'Error writing events to file');
       return ;
     }
   });
@@ -87,12 +87,12 @@ table.key('C-p', function( ch, key ) {
 
 table.on('focus', function() {
   store.UI.helpLine.emit('content', '<Escape> Unfocus          <Ctrl-P> Clear Log       <Ctrl-C> Exit');
-  table.style.border.fg = config.color.alert;
+  table.style.border.fg = config.color.alertColor;
   store.UI.screen.render();
 });
 
 table.on('blur', function() {
-  table.style.border.fg = config.color.primary;
+  table.style.border.fg = config.color.primaryColor;
   store.UI.screen.render();
 });
 

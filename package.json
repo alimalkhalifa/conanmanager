@@ -1,5 +1,5 @@
 {
-  "name": "conanmanager",
+  "name": "conangg",
   "version": "1.0.0",
   "description": "conan server manager",
   "main": "index.js",
@@ -15,5 +15,11 @@
     "moment": "^2.17.1",
     "node-windows": "^0.1.14",
     "steam-web": "^0.4.0"
+  },
+  "eslintConfig": {
+    "extends": "eslint:recommended",
+    "env": {
+      "node": true
+    }
   }
 }

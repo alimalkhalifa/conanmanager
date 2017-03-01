@@ -12,14 +12,14 @@ var message = blessed.message ({
     type: 'line'
   },
   style: {
-    fg: config.color.primary,
-    bg: config.color.secondary,
+    fg: config.color.primaryColor,
+    bg: config.color.secondaryColor,
     border: {
-      fg: config.color.primary
+      fg: config.color.primaryColor
     },
     buttons: {
       fg: config.color.seconndary,
-      bg: config.color.primary
+      bg: config.color.primaryColor
     }
   },
   hidden: true

@@ -1,5 +1,4 @@
 var timer = require('timers');
-var moment = require('moment');
 var wincmd = require('node-windows');
 var config = require('./config.js');
 var spawn = require('child_process').spawn ;
@@ -21,13 +20,16 @@ var store = {
   commandLine: '',
   freemem: 0,
   servermem: 0,
+  timers: {
+
+  }
 };
 
 if ( fs.existsSync('announcements.json') ) {
   store.announcements = JSON.parse(fs.readFileSync('announcements.json'));
 }
 
-timer.setInterval(function() { // Server Status check
+store.timers.serverStatus = timer.setInterval(function() { // Server Status check
   var pid = -1 ;
   wincmd.list(function(svc){
     for ( var s in svc ) {
@@ -41,33 +43,53 @@ timer.setInterval(function() { // Server Status check
   }, false);
 }, 1 * 1000 );
 
-timer.setInterval(function() { // Server restarter
-  if ( config.autoRestart ) {
-    if ( !store.starting ) {
-      if ( !store.updating ) {
-        if ( !store.killing ) {
-          if ( store.pid < 0 ) {
-            store.startServer()
-          }
-        }
-      }
+store.enableServerRestarterTimer = function() {
+  config.autoRestart = true ;
+  config.save() ;
+  store.timers.serverRestarter = timer.setInterval(function() { // Server restarter
+    if ( config.autoRestart && !store.starting && !store.updating && !store.killing && store.pid < 0 ) {
+      store.startServer();
     }
-  }
-}, 10 * 1000 );
+  }, 10 * 1000 );
+};
 
-timer.setInterval(function () { // Server updater
-  steam.getNewsForApp({
-    appid: config.app_id_news,
-    maxlength: 300,
-    count: 10,
-    callback: store.checkNews
-  });
-  if ( config.autoUpdate ) {
-    store.shouldUpdate();
-  }
-}, 60 * 1000 );
+store.disableServerRestarterTimer = function() {
+  config.autoRestart = false ;
+  config.save() ;
+  timer.clearInterval(store.timers.serverRestarter);
+};
 
-timer.setInterval(function () { // System memory get
+if ( config.autoRestart ) {
+  store.enableServerRestarterTimer() ;
+}
+
+store.enableServerUpdaterTimer = function() {
+  config.autoUpdate = true ;
+  config.save() ;
+  store.timers.serverUpdater = timer.setInterval(function () { // Server updater
+    steam.getNewsForApp({
+      appid: config.app_id_news,
+      maxlength: 300,
+      count: 10,
+      callback: store.checkNews
+    });
+    if ( config.autoUpdate ) {
+      store.shouldUpdate();
+    }
+  }, 60 * 1000 );
+};
+
+store.disableServerUpdaterTimer = function() {
+  config.autoUpdate = false ;
+  config.save() ;
+  timer.clearInterval(store.timers.serverUpdater);
+};
+
+if ( config.autoUpdate ) {
+  store.enableServerUpdaterTimer() ;
+}
+
+store.timers.memoryGet = timer.setInterval(function () { // System memory get
   store.freemem = Number(os.freemem() / 1024 / 1024).toFixed(0) ;
   store.UI.memGraph.emit('update');
 }, 5 * 1000 );
@@ -87,7 +109,7 @@ store.checkNews = function( err, data ) {
   var newnews = false ;
   if ( err ) {
      store.UI.terminalLog.emit('log', '[NEWSERROR] ' + err);
-     store.UI.eventLog.emit('newEvent', config.event.ERROR, 'Error checking news');
+     store.UI.eventLog.emit('newEvent', config.event.errorColor, 'Error checking news');
     return ;
   }
   var news = data.appnews.newsitems;
@@ -95,7 +117,7 @@ store.checkNews = function( err, data ) {
     if ( news[n].feedname != 'steam_community_announcements' )
       news.splice(n,1);
   }
-  for ( var n = news.length-1; n >= 0 ; n-- ) {
+  for ( n = news.length-1; n >= 0 ; n-- ) {
     var match = false;
     for ( var a in store.announcements ) {
       if ( news[n].gid == store.announcements[a].gid ) {
@@ -114,12 +136,12 @@ store.checkNews = function( err, data ) {
     fs.writeFile('announcements.json', JSON.stringify(store.announcements), { flag: 'w' }, function(err) {
       if ( err ) {
         store.UI.terminalLog.emit('log', '[ERROR] ' + err);
-        store.UI.eventLog.emit('newEvent', config.event.ERROR, 'Error writing announcements');
+        store.UI.eventLog.emit('newEvent', config.event.errorColor, 'Error writing announcements');
         return ;
       }
     });
     store.UI.terminalLog.emit('log', '[UPDATE]: Queuing update due to new News');
-    store.UI.eventLog.emit('newEvent', config.event.ALERT, 'Queue Server Update - News');
+    store.UI.eventLog.emit('newEvent', config.event.alertColor, 'Queue Server Update - News');
     config.needUpdate = true ;
     config.save() ;
     store.UI.updaterStatus.emit('update');
@@ -154,9 +176,11 @@ store.startServer = function() {
   store.UI.eventLog.emit('newEvent', config.event.STATUS, 'Starting Server');
   store.serverProc = spawn(config.exeName, store.buildExeOptions(), {cwd: config.game.serverDir.value, detached: true});
   store.serverProc.on('error', function(err) {
-    store.UI.terminalLog.emit('log', '[ERROR] EXE ' + config.exeName + ' not found in ' + config.game.serverDir.value );
-    store.UI.eventLog.emit('newEvent', config.event.ERROR, 'Exe not found');
+    store.UI.terminalLog.emit('log', '[ERROR] EXE ' + config.exeName + ' not found in ' + config.game.serverDir.value + ' -err- ' + err );
+    store.UI.eventLog.emit('newEvent', config.event.errorColor, 'Exe not found');
     store.starting = false ;
+    store.disableServerRestarterTimer();
+    store.UI.updaterStatus.emit('update');
   });
   store.serverProc.stdout.on('data', function(data) {
     store.UI.terminalLog.emit('log', data.toString());
@@ -169,15 +193,15 @@ store.startServer = function() {
   }, 60 * 1000 );
 }
 
-store.updateServer = function() {
+store.updateServer = function() { // CHECK redundant function?
   store.updating = true ;
   if ( store.pid >= 0 ) {
     store.killing = true ;
     store.UI.eventLog.emit('newEvent', config.event.STATUS, 'Killing server at PID ' + store.pid);
     var killServerProc = spawn('taskkill.exe', ['/PID', store.pid]);
     killServerProc.on('error', function(err) {
-      store.UI.terminalLog.emit('log', '[KILLERROR] command taskkill.exe not available on your server');
-      store.UI.eventLog.emit('newEvent', config.event.ERROR, 'Unable to kill server');
+      store.UI.terminalLog.emit('log', '[KILLERROR] command taskkill.exe not available on your server -err- ' + err);
+      store.UI.eventLog.emit('newEvent', config.event.errorColor, 'Unable to kill server');
     });
     killServerProc.stdout.on('data', function(data) {
     store.UI.terminalLog.emit('log', '[KILL] ' + data.toString());
@@ -187,10 +211,10 @@ store.updateServer = function() {
     });
     killServerProc.on('close', function(code) {
       store.killing = false ;
-      if ( code == 0 ) {
-        store.updateServerProc() ;
+      if ( code != 0 ) {
+        store.UI.eventLog.emit('newEvent', config.event.errorColor, 'Unable to kill server');
       } else {
-        store.UI.eventLog.emit('newEvent', config.event.ERROR, 'Unable to kill server');
+        store.updateServerProc() ;
       }
     });
   } else {
@@ -198,14 +222,14 @@ store.updateServer = function() {
   }
 }
 
-store.killServer = function() {
+store.killServer = function() { // CHECK redundant function?
   if ( store.pid >= 0 ) {
     store.killing = true ;
     store.UI.eventLog.emit('newEvent', config.event.STATUS, 'Killing server at PID ' + store.pid);
     var killServerProc = spawn('taskkill.exe', ['/PID', store.pid]);
     killServerProc.on('error', function(err) {
-      store.UI.terminalLog.emit('log', '[KILLERROR] command taskkill.exe not available on your server');
-      store.UI.eventLog.emit('newEvent', config.event.ERROR, 'Unable to kill server');
+      store.UI.terminalLog.emit('log', '[KILLERROR] command taskkill.exe not available on your server -err- ' + err);
+      store.UI.eventLog.emit('newEvent', config.event.errorColor, 'Unable to kill server');
     });
     killServerProc.stdout.on('data', function(data) {
     store.UI.terminalLog.emit('log', '[KILL] ' + data.toString());
@@ -213,7 +237,7 @@ store.killServer = function() {
     killServerProc.stderr.on('data', function(data) {
       store.UI.terminalLog.emit('log', '[KILLERROR] ' + data.toString());
     });
-    killServerProc.on('close', function(code) {
+    killServerProc.on('close', function() {
       store.killing = false ;
     });
   }
@@ -223,9 +247,11 @@ store.updateServerProc = function() {
   store.UI.eventLog.emit('newEvent', config.event.STATUS, 'Updating Server');
   store.updateProc = spawn(config.steamExeName, store.buildUpdateOptions(), {cwd: config.game.steamCMDDir.value});
   store.updateProc.on('error', function(err) {
-    store.UI.terminalLog.emit('log', '[STEAMERR] EXE ' + config.steamExeName + ' not found in ' + config.steamCMDDir);
-    store.UI.eventLog.emit('newEvent', config.event.ERROR, 'SteamExe not found');
+    store.UI.terminalLog.emit('log', '[STEAMERR] EXE ' + config.steamExeName + ' not found in ' + config.steamCMDDir + ' -err- ' + err);
+    store.UI.eventLog.emit('newEvent', config.event.errorColor, 'SteamExe not found');
     store.updating = false ;
+    store.disableServerUpdaterTimer() ;
+    store.UI.updaterStatus.emit('update');
   });
   store.updateProc.stdout.on('data', function( data) {
     store.UI.terminalLog.emit('log', '[STEAM] ' + data.toString());

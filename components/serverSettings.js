@@ -18,20 +18,20 @@ var table = blessed.listtable ({
     type: 'line'
   },
   style: {
-    fg: config.color.primary,
-    bg: config.color.secondary,
+    fg: config.color.primaryColor,
+    bg: config.color.secondaryColor,
     border: {
-      fg: config.color.primary
+      fg: config.color.primaryColor
     },
     header: {
-      fg: config.color.primary,
+      fg: config.color.primaryColor,
       bold: true
     },
     cell: {
-      fg: config.color.primary,
+      fg: config.color.primaryColor,
       selected: {
-        bg: config.color.primary,
-        fg: config.color.secondary
+        bg: config.color.primaryColor,
+        fg: config.color.secondaryColor
       }
     }
   }
@@ -99,12 +99,12 @@ table.key(['l', 'L'], function( ch, key ) {
 
 table.on('focus', function() {
   store.UI.helpLine.emit('content', '<Escape> Unfocus       <Enter> Edit Setting         <D> Default Value        <S> Save Config       <L> Load Config       <Ctrl-C> Exit');
-  table.style.border.fg = config.color.alert;
+  table.style.border.fg = config.color.alertColor;
   store.UI.screen.render();
 });
 
 table.on('blur', function() {
-  table.style.border.fg = config.color.primary;
+  table.style.border.fg = config.color.primaryColor;
   store.UI.screen.render();
 })
 

@@ -1,12 +1,12 @@
-const fs = require('fs');
+var fs = require('fs');
 
 var config = {
   color: {
-    primary: 'green',
-    secondary: 'black',
-    success: 'green',
-    error: 'red',
-    alert: 'yellow',
+    primaryColor: 'green',
+    secondaryColor: 'black',
+    successColor: 'green',
+    errorColor: 'red',
+    alertColor: 'yellow',
   },
   event: {
     STATUS: '{bold}{green-fg}STATUS{/}',
@@ -76,10 +76,8 @@ config.save = function() {
   configToSave.autoRestart = config.autoRestart ;
   configToSave.needUpdate = config.needUpdate ;
 
-  fs.writeFile('config.json', JSON.stringify(configToSave), {flag: 'w'}, function(err) {
-    if ( err ) {
-      store.UI.terminalLog.emit('log', '[SAVEERR] ' + err);
-    }
+  fs.writeFile('config.json', JSON.stringify(configToSave), {flag: 'w'}, function() {
+    
   });
 }
 

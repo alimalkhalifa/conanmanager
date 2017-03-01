@@ -13,10 +13,10 @@ var box = blessed.box ({
     type: 'line'
   },
   style: {
-    fg: config.color.primary,
-    bg: config.color.secondary,
+    fg: config.color.primaryColor,
+    bg: config.color.secondaryColor,
     border: {
-      fg: config.color.primary
+      fg: config.color.primaryColor
     }
   }
 });
@@ -31,7 +31,7 @@ box.on('update', function() {
   } else if ( store.starting ) {
     box.setContent('Server is starting...');
   } else {
-    box.setContent('Server is {'+ config.color.error + '-fg}{bold}NOT{/} Running');
+    box.setContent('Server is {'+ config.color.errorColor + '-fg}{bold}NOT{/} Running');
   }
   store.UI.screen.render();
 });
