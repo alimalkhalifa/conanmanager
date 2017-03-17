@@ -17,6 +17,7 @@ require('./components/serverSettings.js');
 require('./components/helpLine.js');
 require('./components/serverSettings/prompt.js');
 require('./components/eventLog.js');
+require('./components/eventLog/detail.js');
 require('./components/terminalLog.js');
 require('./components/memGraph.js');
 require('./components/aboutPage.js');
@@ -116,7 +117,6 @@ screen.append(store.UI.aboutPage);
 // screen.append(store.UI.memGraph); // Appended in module
 
 screen.append(store.UI.prompt);
-//screen.append(store.UI.aboutPage);
 
 screen.emit('helpline');
 screen.render() ;

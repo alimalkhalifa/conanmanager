@@ -41,7 +41,12 @@ if ( fs.existsSync('events.json') ) {
 }
 
 table.on('newEvent', function(e_name, e_desc) {
-  store.events.push([moment().format(), e_name, e_desc]);
+  if ( e_name == config.event.ERROR ) {
+    e_log = fs.readFileSync(config.game.serverDir.value + '\\ConanSandbox\\Saved\\Logs\\ConanSandbox.log', 'utf-8');
+    store.events.push([moment().format(), e_name, e_desc, e_log]);
+  } else {
+  store.events.push([moment().format(), e_name, e_desc, ""]);
+  }
   fs.writeFile('events.json', JSON.stringify(store.events), { flag: 'w' }, function(err) {
     if ( err ) {
       store.UI.terminalLog.emit('log', '[ERROR] ' + err);
@@ -85,8 +90,15 @@ table.key('C-p', function( ch, key ) {
   table.emit('update');
 });
 
+table.key('enter', function( ch, key ) {
+   var log = table.selected - 1 ;
+   if ( store.events[log][3] != "" ) {
+     store.UI.log_detail.emit('detail', store.events[log][0], store.events[log][1], store.events[log][2], store.events[log][3]);
+   }
+});
+
 table.on('focus', function() {
-  store.UI.helpLine.emit('content', '<Escape> Unfocus          <Ctrl-P> Clear Log       <Ctrl-C> Exit');
+  store.UI.helpLine.emit('content', '<Escape> Unfocus       <Enter> Details          <Ctrl-P> Clear Log       <Ctrl-C> Exit');
   table.style.border.fg = config.color.alertColor;
   store.UI.screen.render();
 });

@@ -96,7 +96,16 @@ store.timers.memoryGet = timer.setInterval(function () { // System memory get
 
 store.changeStatus = function(pid) {
   if ( store.pid != pid ) {
-    store.UI.eventLog.emit('newEvent', config.event.STATUS, 'Server PID: ' + pid );
+    if ( pid == -1 ) {
+      if ( !store.graceful ) {
+        store.UI.eventLog.emit('newEvent', config.event.ERROR, 'Server Crashed!');
+      } else {
+      store.UI.eventLog.emit('newEvent', config.event.STATUS, 'Server Shutdown');
+      store.graceful = false ;
+      }
+    } else {
+      store.UI.eventLog.emit('newEvent', config.event.STATUS, 'Server PID: ' + pid );
+    }
     store.pid = pid ;
     store.UI.serverStatus.emit('update');
   }
@@ -197,6 +206,7 @@ store.updateServer = function() { // CHECK redundant function?
   store.updating = true ;
   if ( store.pid >= 0 ) {
     store.killing = true ;
+    store.graceful = true ;
     store.UI.eventLog.emit('newEvent', config.event.STATUS, 'Killing server at PID ' + store.pid);
     var killServerProc = spawn('taskkill.exe', ['/PID', store.pid]);
     killServerProc.on('error', function(err) {
@@ -225,6 +235,7 @@ store.updateServer = function() { // CHECK redundant function?
 store.killServer = function() { // CHECK redundant function?
   if ( store.pid >= 0 ) {
     store.killing = true ;
+    store.graceful = true ;
     store.UI.eventLog.emit('newEvent', config.event.STATUS, 'Killing server at PID ' + store.pid);
     var killServerProc = spawn('taskkill.exe', ['/PID', store.pid]);
     killServerProc.on('error', function(err) {
