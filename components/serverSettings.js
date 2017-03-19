@@ -87,18 +87,8 @@ table.key(['d', 'D'], function( ch, key ) {
   table.emit('update');
 });
 
-table.key(['s', 'S'], function( ch, key ) {
-  config.save() ;
-  store.UI.updaterStatus.emit('update');
-});
-
-table.key(['l', 'L'], function( ch, key ) {
-  config.load() ;
-  table.emit('update');
-});
-
 table.on('focus', function() {
-  store.UI.helpLine.emit('content', '<Escape> Unfocus       <Enter> Edit Setting         <D> Default Value        <S> Save Config       <L> Load Config       <Ctrl-C> Exit');
+  store.UI.helpLine.emit('content', '<Escape> Unfocus       <Enter> Edit Setting         <D> Default Value       <Ctrl-C> Exit');
   table.style.border.fg = config.color.alertColor;
   store.UI.screen.render();
 });

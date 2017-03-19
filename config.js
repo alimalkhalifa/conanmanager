@@ -50,6 +50,11 @@ var config = {
       prompt_text: 'Server EXE Directory',
       initial_value: '',
       no_space: true
+    },
+    workshopIDs: {
+      value: '',
+      prompt_text: 'Workshop IDs (Comma Seperated)',
+      initial_value: '',
     }
   },
   autoUpdate: false,
@@ -72,6 +77,8 @@ config.save = function() {
   configToSave.game.steamCMDDir.value = config.game.steamCMDDir.value ;
   configToSave.game.serverDir = {}
   configToSave.game.serverDir.value = config.game.serverDir.value;
+  configToSave.game.workshopIDs = {}
+  configToSave.game.workshopIDs.value = config.game.workshopIDs.value
   configToSave.autoUpdate = config.autoUpdate ;
   configToSave.autoRestart = config.autoRestart ;
   configToSave.needUpdate = config.needUpdate ;
@@ -82,26 +89,32 @@ config.save = function() {
 }
 
 config.load = function() {
-  if ( fs.existsSync( 'config.json' ) ) {
-    var savedConfig = JSON.parse(fs.readFileSync('config.json')) ;
-    if ( savedConfig.game.serverName )
-      config.game.serverName.value = savedConfig.game.serverName.value ;
-    if ( savedConfig.game.maxPlayers )
-      config.game.maxPlayers.value = savedConfig.game.maxPlayers.value ;
-    if ( savedConfig.game.port )
-      config.game.port.value = savedConfig.game.port.value ;
-    if ( savedConfig.game.queryPort )
-      config.game.queryPort.value = savedConfig.game.queryPort.value ;
-    if ( savedConfig.game.steamCMDDir )
-      config.game.steamCMDDir.value = savedConfig.game.steamCMDDir.value ;
-    if ( savedConfig.game.serverDir )
-      config.game.serverDir.value = savedConfig.game.serverDir.value;
-    if ( savedConfig.autoUpdate )
-      config.autoUpdate = savedConfig.autoUpdate ;
-    if ( savedConfig.autoRestart )
-      config.autoRestart = savedConfig.autoRestart ;
-    if ( savedConfig.needUpdate )
-      config.needUpdate = savedConfig.needUpdate ;
+  try {
+    if ( fs.existsSync( 'config.json' ) ) {
+      var savedConfig = JSON.parse(fs.readFileSync('config.json')) ;
+      if ( savedConfig.game.serverName )
+        config.game.serverName.value = savedConfig.game.serverName.value ;
+      if ( savedConfig.game.maxPlayers )
+        config.game.maxPlayers.value = savedConfig.game.maxPlayers.value ;
+      if ( savedConfig.game.port )
+        config.game.port.value = savedConfig.game.port.value ;
+      if ( savedConfig.game.queryPort )
+        config.game.queryPort.value = savedConfig.game.queryPort.value ;
+      if ( savedConfig.game.steamCMDDir )
+        config.game.steamCMDDir.value = savedConfig.game.steamCMDDir.value ;
+      if ( savedConfig.game.serverDir )
+        config.game.serverDir.value = savedConfig.game.serverDir.value;
+      if ( savedConfig.game.workshopIDs )
+        config.game.workshopIDs.value = savedConfig.game.workshopIDs.value;
+      if ( savedConfig.autoUpdate )
+        config.autoUpdate = savedConfig.autoUpdate ;
+      if ( savedConfig.autoRestart )
+        config.autoRestart = savedConfig.autoRestart ;
+      if ( savedConfig.needUpdate )
+        config.needUpdate = savedConfig.needUpdate ;
+    }
+  } catch (err) {
+    fs.unlink('config.json');
   }
 }
 

@@ -2,6 +2,7 @@ var timer = require('timers');
 var wincmd = require('node-windows');
 var config = require('./config.js');
 var spawn = require('child_process').spawn ;
+var execSync = require('child_process').execSync ;
 var os = require('os');
 var fs = require('fs');
 var Steam = require('steam-web');
@@ -176,6 +177,12 @@ store.buildUpdateOptions = function() {
   options.push('+login anonymous');
   options.push('+force_install_dir ' + config.game.serverDir.value.replace(' ', '\ '));
   options.push('+app_update ' + config.app_id);
+  if ( config.game.workshopIDs.value != '' ) {
+    var ids = config.game.workshopIDs.value.replace(/\s/g, '').split(',') ;
+    for ( var id in ids ) {
+      options.push('log', '+workshop_download_item ' + config.app_id_news + ' ' + ids[id]);
+    }
+  }
   options.push('+quit');
   return options ;
 }
@@ -272,8 +279,44 @@ store.updateServerProc = function() {
   });
   store.updateProc.on('close', function(code) {
     store.UI.terminalLog.emit('log', '[STEAM] Exited with code ' + code);
+    store.updating = false ;
     if ( code == 0 ) {
-      store.updating = false ;
+      if ( config.game.workshopIDs.value != '' ) {
+        var ids = config.game.workshopIDs.value.replace(/\s/g, '').split(',') ;
+
+        if ( !fs.existsSync(config.game.serverDir.value + '\\Mods')) {
+          fs.mkdir(config.game.serverDir.value + '\\Mods')
+        }
+
+        var filesToDel = execSync('dir /b ' + config.game.serverDir.value + '\\Mods\\');
+        filesToDel = String(filesToDel).split(/\n\r|\n|\r/g);
+        for ( var f in filesToDel ) {
+          if ( filesToDel[f] != '' )
+            fs.unlinkSync(config.game.serverDir.value + '\\Mods\\' + filesToDel[f]);
+        }
+
+        for ( var id in ids ) {
+          var ls ;
+          if ( fs.existsSync( config.game.steamCMDDir.value + '\\steamapps\\workshop\\content\\' + config.app_id_news + '\\' + ids[id] ) ) {
+            ls = execSync('dir /b ' + config.game.steamCMDDir.value + '\\steamapps\\workshop\\content\\' + config.app_id_news + '\\' + ids[id]);
+            ls = String(ls).split(/\n\r|\n|\r/g);
+            for ( var l in ls ) {
+              if ( ls[l] != '' ) {
+                fs.linkSync(config.game.steamCMDDir.value + '\\steamapps\\workshop\\content\\' + config.app_id_news + '\\' + ids[id] + '\\' + ls[l], config.game.serverDir.value + '\\Mods\\' + ls[l] ) ;
+              }
+            }
+          }
+        }
+        var mods = ''
+        var files = execSync('dir /b ' + config.game.serverDir.value + '\\Mods\\');
+        files = String(files).split(/\n\r|\n|\r/g);
+        for ( var f in files ) {
+          if ( files[f] != '' && String(files[f]).indexOf('.pak') !== -1 ) {
+            mods += files[f] + '\n';
+          }
+        }
+        fs.writeFileSync(config.game.serverDir.value + '\\Mods\\modlist.txt', mods);
+      }
       config.needUpdate = false ;
       config.save() ;
       store.UI.updaterStatus.emit('update');

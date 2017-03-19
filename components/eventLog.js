@@ -37,7 +37,11 @@ var table = blessed.listtable ({
 });
 
 if ( fs.existsSync('events.json') ) {
-  store.events = JSON.parse(fs.readFileSync('events.json')) ;
+  try {
+    store.events = JSON.parse(fs.readFileSync('events.json')) ;
+  } catch (err) {
+    fs.unlink('events.json');
+  }
 }
 
 table.on('newEvent', function(e_name, e_desc) {

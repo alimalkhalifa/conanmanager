@@ -41,14 +41,8 @@ box.on('detail', function(etime, etype, edesc, elog) {
 });
 
 box.on('focus', function() {
-  store.UI.helpLine.emit('content', '<Enter> Exit      <Up> Scroll up      <Down> Scroll down');
-});
-
-box.key('enter', function( ch, key ) {
-  store.UI.screen.focusPop();
-  store.UI.eventLog.focus();
-  store.UI.screen.remove(box);
-  store.UI.screen.render() ;
+  store.UI.helpLine.emit('content', '<Escape> Back to event log      <Up> Scroll up      <Down> Scroll down');
+  store.detail = true ;
 });
 
 box.key('down', function( ch, key ) {

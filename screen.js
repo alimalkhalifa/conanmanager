@@ -3,6 +3,7 @@ var store = require('./store.js');
 var config = require('./config.js');
 
 var root = true ;
+store.detail = false ;
 
 var screen = blessed.screen ({
   smartCSR: true,
@@ -47,10 +48,16 @@ screen.key('f1', function( ch, key ) {
 });
 
 screen.key('escape', function( ch, key ) {
-  if ( !root ) {
+  if ( !root && !store.detail ) {
     screen.focusPop();
     screen.emit('helpline');
     root = true ;
+  } else if ( store.detail ) {
+    screen.focusPop();
+    store.UI.eventLog.focus();
+    store.UI.screen.remove(store.UI.log_detail);
+    store.UI.screen.render() ;
+    store.detail = false ;
   }
 });
 
@@ -76,7 +83,7 @@ screen.key(['r', 'R'], function( ch, key ) {
 
 screen.key(['C-u'], function( ch, key ) {
   config.needUpdate = true ;
-  config.save() ;
+  //config.save() ;
   store.UI.updaterStatus.emit('update');
   store.shouldUpdate();
 });
