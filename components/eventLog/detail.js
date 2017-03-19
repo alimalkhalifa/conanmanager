@@ -9,6 +9,7 @@ var box = blessed.box({
   height: 'shrink',
   tags: true,
   scrollable: true,
+  alwaysScroll: true,
   label: ' Details ',
   border: {
     type: 'line'

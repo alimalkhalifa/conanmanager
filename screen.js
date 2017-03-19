@@ -7,7 +7,7 @@ store.detail = false ;
 
 var screen = blessed.screen ({
   smartCSR: true,
-  terminal: 'windows-ansi'
+  //terminal: 'windows-ansi'
 });
 
 store.UI.screen = screen ;
